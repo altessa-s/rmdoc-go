@@ -1,0 +1,74 @@
+# Copyright 2026 ALTESSA SOLUTIONS INC.
+# Use of this source code is governed by an MIT-style license that can be
+# found in the LICENSE file.
+
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+
+jobs:
+  test:
+    name: ${{ matrix.os }} / ${{ matrix.cc }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # GCC 13 is the oldest GCC that reads the vendored C23; 14 is the
+          # newest the runner ships.
+          - { os: ubuntu-latest, cc: gcc-13 }
+          - { os: ubuntu-latest, cc: gcc-14 }
+          # The runner's own clang is 18, which does not read the vendored C23.
+          - { os: ubuntu-latest, cc: clang-19 }
+          - { os: macos-latest, cc: clang }
+    env:
+      CGO_ENABLED: "1"
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Install clang 19
+        if: matrix.cc == 'clang-19'
+        run: |
+          wget -qO /tmp/llvm.sh https://apt.llvm.org/llvm.sh
+          chmod +x /tmp/llvm.sh
+          sudo /tmp/llvm.sh 19
+
+      - name: Name the compiler
+        run: |
+          echo "CC=${{ matrix.cc }}" >> "$GITHUB_ENV"
+          ${{ matrix.cc }} --version | head -1
+
+      - uses: actions/setup-go@v6
+        with:
+          go-version: stable
+
+      - name: Vet
+        run: go vet ./...
+
+      - name: Test
+        run: go test -race -count=1 ./...
+
+      - name: Test with full cgo pointer checks
+        run: GOEXPERIMENT=cgocheck2 go test -count=1 ./...
+
+      - name: Fuzz the reader briefly
+        run: go test -run='^$' -fuzz=FuzzReader -fuzztime=20s .
+
+      - name: Fuzz names briefly
+        run: go test -run='^$' -fuzz=FuzzName -fuzztime=20s .
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v6
+        with:
+          go-version: stable
+      - name: Name the compiler
+        run: echo "CC=gcc-14" >> "$GITHUB_ENV"
+      - uses: golangci/golangci-lint-action@v8
+        with:
+          version: v2.15
