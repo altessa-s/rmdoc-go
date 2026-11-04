@@ -17,7 +17,7 @@ package rmdoc
 import "C"
 
 // Version is the version of the vendored rmdoc-lib.
-const Version = "1.0.0"
+const Version = "1.1.0"
 
 // cVersion answers the C library's own version, so that a test can hold
 // [Version] to it.

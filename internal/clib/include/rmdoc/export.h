@@ -5,9 +5,9 @@
 /* What the shared library lets out.
  *
  * Everything inside is compiled with hidden visibility, so the plumbing —
- * the arena, matching scratch storage and Unicode helpers — does not reach a consumer's
- * symbol table and cannot be linked against by accident. What is marked
- * `RMD_API` below is the contract, and only that. */
+ * the arena, matching scratch storage and Unicode helpers — does not reach a
+ * consumer's symbol table and cannot be linked against by accident. What is
+ * marked `RMD_API` below is the contract, and only that. */
 
 #ifndef RMDOC_EXPORT_H
 #define RMDOC_EXPORT_H

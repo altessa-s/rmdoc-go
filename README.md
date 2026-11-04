@@ -27,7 +27,7 @@ CC=clang-19 go build ./...
 ## Installing
 
 ```sh
-go get github.com/altessa-s/rmdoc-go@v1.0.0
+go get github.com/altessa-s/rmdoc-go@v1.1.0
 ```
 
 ```go
@@ -281,9 +281,11 @@ go test -run='^$' -fuzz=FuzzName -fuzztime=30s .
 
 - **[rmdoc-lib](https://github.com/altessa-s/rmdoc-lib)** — the C23 library these bindings compile.
 - **[rmdoc-swift](https://github.com/altessa-s/rmdoc-swift)** — the same container as a Swift package.
-- **[rmlines-go](https://github.com/altessa-s/rmlines-go)** — the `.rm` v6 page format for Go; the pages this container carries.
-- **[rmlines-lib](https://github.com/altessa-s/rmlines-lib)** — the same page format as a C23 library.
-- **[Slate Drive](https://slatedrive.app)** ([repository](https://github.com/altessa-s/slatedrive)) — the app these packages are part of.
+- **[rmlines-go](https://github.com/altessa-s/rmlines-go)** — the `.rm` v6 page format for Go: pages, strokes, typed text and highlights, read and
+  written.
+- **[rmmarks-go](https://github.com/altessa-s/rmmarks-go)** — marked text for Go: which words a highlight covers, and how OCR from cropped strips
+  returns to the page.
+- **[rmrender-go](https://github.com/altessa-s/rmrender-go)** — reMarkable pages and documents drawn from Go to PNG and PDF.
 
 ## Acknowledgements
 
