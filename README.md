@@ -277,10 +277,13 @@ go test -run='^$' -fuzz=FuzzReader -fuzztime=30s .
 go test -run='^$' -fuzz=FuzzName -fuzztime=30s .
 ```
 
-## See also
+## Bindings
 
 - **[rmdoc-lib](https://github.com/altessa-s/rmdoc-lib)** — the C23 library these bindings compile.
 - **[rmdoc-swift](https://github.com/altessa-s/rmdoc-swift)** — the same container as a Swift package.
+
+## See also
+
 - **[rmlines-go](https://github.com/altessa-s/rmlines-go)** — the `.rm` v6 page format for Go: pages, strokes, typed text and highlights, read and
   written.
 - **[rmmarks-go](https://github.com/altessa-s/rmmarks-go)** — marked text for Go: which words a highlight covers, and how OCR from cropped strips
