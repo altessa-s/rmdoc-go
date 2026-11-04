@@ -54,7 +54,7 @@ else
     exit 1
 fi
 
-sources=(rmd_codec rmd_io rmd_miniz rmd_reader rmd_support rmd_unicode rmd_writer)
+sources=(rmd_codec rmd_io rmd_miniz rmd_reader rmd_support rmd_unicode rmd_unicode_data rmd_writer)
 private=(rmd_internal rmd_miniz rmd_unicode_data)
 headers=(export rmdoc)
 codec=(miniz.c miniz.h LICENSE.txt)
