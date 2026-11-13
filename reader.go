@@ -222,7 +222,12 @@ func (r *Reader) DocumentIDs() ([]string, error) {
 // as it returns, so body must copy whatever it keeps. When body returns an
 // error, ForEach stops and fails with an *Error of [StatusCallback] that
 // unwraps to it. A panic in either function stops the walk and is raised
-// again from ForEach. Neither function may call runtime.Goexit.
+// again from ForEach after C returns and the handle is deleted. A
+// runtime.Goexit stops the walk and exits the calling goroutine after the
+// same cleanup, running its deferred functions.
+//
+// Both functions run on separate goroutines, synchronously with ForEach;
+// they do not inherit the calling goroutine's state, such as LockOSThread.
 func (r *Reader) ForEach(selectFn func(Entry) bool, body func(Entry, []byte) error) error {
 	if body == nil {
 		return errInvalid("ForEach needs a body")
@@ -243,7 +248,10 @@ func (r *Reader) ForEach(selectFn func(Entry) bool, body func(Entry, []byte) err
 // Unpack reads the entries selectFn chooses into memory, in directory order.
 // A nil selectFn chooses every entry; choosing none answers no files and no
 // error. selectFn is called for every entry first, as in [Reader.ForEach].
-// The files are Go memory and outlive the reader.
+// The files are Go memory and outlive the reader. selectFn runs on a
+// separate goroutine, synchronously with Unpack. As with [Reader.ForEach],
+// a panic or runtime.Goexit stops C, deletes the handle, and then panics or
+// exits on the calling goroutine, running its deferred functions.
 func (r *Reader) Unpack(selectFn func(Entry) bool) ([]File, error) {
 	c, err := r.acquire()
 	if err != nil {

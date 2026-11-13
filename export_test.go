@@ -6,3 +6,6 @@ package rmdoc
 
 // CVersion lets the external tests hold Version against the C library's.
 var CVersion = cVersion
+
+// LiveHandles answers how many calls still hold a C callback handle.
+func LiveHandles() int64 { return liveHandles.Load() }

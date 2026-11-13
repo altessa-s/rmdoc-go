@@ -69,7 +69,6 @@ func FuzzReader(f *testing.F) {
 
 		var walked []rmdoc.File
 		walkErr := r.ForEach(nil, func(e rmdoc.Entry, payload []byte) error {
-			// No t.Fatal here: it would leave the goroutine through C.
 			if crc32.ChecksumIEEE(payload) != e.CRC32 || len(payload) != int(e.UncompressedSize) {
 				t.Errorf("%q was delivered unchecked", e.Name)
 				return errUnchecked
