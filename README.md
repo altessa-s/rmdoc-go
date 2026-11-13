@@ -27,7 +27,7 @@ CC=clang-19 go build ./...
 ## Installing
 
 ```sh
-go get github.com/altessa-s/rmdoc-go@v1.1.1
+go get github.com/altessa-s/rmdoc-go@v1.1.2
 ```
 
 ```go
@@ -96,8 +96,9 @@ or does not inflate stops the walk, so the body may have seen earlier entries; a
 
 The slice the body receives points into C memory released as the body returns: copy what you keep. When the body returns an error, `ForEach`
 stops and returns an `*Error` of `StatusCallback` that unwraps to it, so `errors.Is` and `errors.As` find your error. A panic in the selector or
-the body is recovered before it can unwind through C, and raised again from `ForEach` once C has returned. Neither function may call
-`runtime.Goexit` (nor `t.FailNow` in a test).
+the body stops C and is raised again on the calling goroutine after C returns and the handle is deleted. `runtime.Goexit` (including
+`t.FailNow` in a test) stops C the same way and exits the calling goroutine after cleanup, running its deferred functions. The selector
+and body run on separate goroutines, synchronously with `ForEach` or `Unpack`, without inheriting the calling goroutine's state.
 
 ```go
 archive, err := rmdoc.Pack([]rmdoc.File{
@@ -245,8 +246,8 @@ length of the call; the array of records that points at them holds only pinned p
 is refused before C sees it. The tests run clean under `GOEXPERIMENT=cgocheck2`.
 
 **Callbacks through handles.** The selector and the body reach C as a `runtime/cgo.Handle` carried as an integer, and come back through two
-exported Go functions. A Go error or panic is kept on the Go side, the callback tells C to stop, and the error is returned or the panic raised
-again once no C frame is left in between.
+exported Go functions. Caller code runs on separate goroutines while those functions wait. A Go error, panic or exit tells C to stop;
+the error is returned, the panic raised again or `runtime.Goexit` called on the calling goroutine once C returns and the handle is deleted.
 
 **Concurrency.** The C library holds no mutable global state. A `Reader` only reads, so any number of goroutines may use one at once, and
 `Close` may be called at any time, even from a callback: reads in flight finish first, and the C reader is released after the last of them. A

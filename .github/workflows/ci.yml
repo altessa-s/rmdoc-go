@@ -29,12 +29,19 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
+      # The distribution's own package first: Ubuntu 24.04 and 26.04 both
+      # carry clang 19 beside their default. apt.llvm.org's llvm.sh is only
+      # the fallback, because it registers its key with apt-key, which Ubuntu
+      # 26.04 no longer has.
       - name: Install clang 19
         if: matrix.cc == 'clang-19'
         run: |
-          wget -qO /tmp/llvm.sh https://apt.llvm.org/llvm.sh
-          chmod +x /tmp/llvm.sh
-          sudo /tmp/llvm.sh 19
+          sudo apt-get update -q
+          if ! sudo apt-get install -y -q clang-19; then
+            wget -qO /tmp/llvm.sh https://apt.llvm.org/llvm.sh
+            chmod +x /tmp/llvm.sh
+            sudo /tmp/llvm.sh 19
+          fi
 
       - name: Name the compiler
         run: |
