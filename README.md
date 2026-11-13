@@ -27,7 +27,7 @@ CC=clang-19 go build ./...
 ## Installing
 
 ```sh
-go get github.com/altessa-s/rmdoc-go@v1.1.1
+go get github.com/altessa-s/rmdoc-go@v1.1.2
 ```
 
 ```go
